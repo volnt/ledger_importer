@@ -4,6 +4,7 @@ version = "0.1.1"
 description = "ledger_importer is a csv-to-ledger importer that can be configured in Python."
 readme = "README.md"
 authors = ["Florent Espanet <florent.esp@gmail.com>"]
+repository = "https://github.com/volnt/ledger_importer"
 
 [tool.poetry.dependencies]
 python = "^3.8"
