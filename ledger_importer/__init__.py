@@ -55,7 +55,11 @@ def main_wrapper(config: Config):
         journal_path: Optional[pathlib.Path] = typer.Option(
             None, help="Path a ledger journal to write & learn accounts from."
         ),
+        quiet: bool = typer.Option(False, help="Don't ask questions and guess all the accounts automatically."),
     ):
+        """
+        Import a bank statement.
+        """
         # Get accounts list
         accounts: list[str] = []
         if journal_path:
@@ -72,13 +76,13 @@ def main_wrapper(config: Config):
         handler = TransactionsHandler(config)
 
         with csv_path.open() as csv_file:
-            transactions = handler.confirm_transactions(
-                handler.merge_transactions(
-                    handler.parse_transactions(
-                        csv.reader(csv_file, delimiter=config.csv_delimiter),
-                    ),
+            transactions = handler.merge_transactions(
+                handler.parse_transactions(
+                    csv.reader(csv_file, delimiter=config.csv_delimiter),
                 ),
             )
+            if not quiet:
+                transactions = handler.confirm_transactions(transactions)
 
         for transaction in transactions:
             print(transaction.to_ledger(config))
