@@ -92,26 +92,26 @@ To run leger_importer, run the configuration module:
 ```sh
 $ python my_importer.py bank-statement.csv --journal-path journal.ledger
 
-|        Account         |    Date    |  Amount  |     Payee     |
+|        Account         |    Date    |  Amount  |        Payee        |
 | Assets:Account:Florent | 2021/07/29 | 1234.56€ | VIR LOLE FOOB A.R.L |
 
 Which account provided this income? ([Income:Salary]/[q]uit/[s]kip)
 
 
-|        Account         |    Date    |  Amount |         Payee          |
+|        Account         |    Date    |  Amount |            Payee             |
 | Assets:Account:Florent | 2021/08/02 | -11.77€ | CARD  27/07/21 SWILE XX*XXXX |
 
 To which account did this money go? ([Expenses:Restaurant]/[q]uit/[s]kip)
 
 
-|        Account         |    Date    |   Amount  |               Payee               |
+|        Account         |    Date    |   Amount  |                  Payee                  |
 | Assets:Account:Florent | 2021/08/03 |  -784.00€ | VIR Save some € Mr.      Florent        |
 
 To which account did this money go? ([Expenses]/[q]uit/[s]kip)
 Assets:Savings
 
 
-|        Account         |    Date    |  Amount |          Payee          |
+|        Account         |    Date    |  Amount |             Payee             |
 | Assets:Account:Florent | 2021/08/03 | -58.63€ | CARD  08/03/21 PAYPAL XX*XXXX |
 
 To which account did this money go? ([Expenses:Shopping]/[q]uit/[s]kip)
