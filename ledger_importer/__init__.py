@@ -9,9 +9,12 @@ from typing import Optional
 import typer
 
 from ledger_importer.config import Config
+from ledger_importer.transaction import Amount
+from ledger_importer.transaction import Posting
+from ledger_importer.transaction import Transaction
 from ledger_importer.transactions_handler import TransactionsHandler
 
-__all__ = ("Config", "runner")
+__all__ = ("Config", "runner", "Amount", "Posting", "Transaction")
 
 
 ACCOUNT_LINE = r"^account ([A-z_ :]*[A-z])( +;?.*)?"

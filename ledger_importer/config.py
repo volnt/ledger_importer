@@ -11,7 +11,6 @@ from ledger_importer.transaction import Transaction
 class Config(ABC):
     skip_lines: int = 1
     csv_delimiter: str = ","
-    default_account: str = "Assets:Checking"
 
     @abstractmethod
     def parse_date(self, fields: tuple) -> datetime.datetime:

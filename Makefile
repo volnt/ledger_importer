@@ -4,6 +4,7 @@
 test:  ## Launch tests
 	poetry run pytest --cov=ledger_importer --cov-report=xml:/tmp/test-reports/coverage.xml --junitxml=/tmp/test-reports/junit.xml -vv -s tests
 	poetry run coverage html
+	poetry run coverage report
 
 .PHONY: style
 style: ## Check code linting and style
