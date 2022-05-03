@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import datetime
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from decimal import Decimal
 
 from ledger_importer.transaction import Transaction

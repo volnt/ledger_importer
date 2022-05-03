@@ -1,8 +1,16 @@
+.DEFAULT_GOAL := help
+
 PYTHON := poetry run python
 
 .PHONY: test
 test:  ## Launch tests
-	${PYTHON} -m coverage run -m pytest -vv -s && ${PYTHON} -m coverage report
+	${PYTHON} -m coverage run --source ledger_importer -m pytest -vv -s
+	${PYTHON} -m coverage report
+	${PYTHON} -m coverage html
+
+.PHONY: style
+style: ## Check code linting and style
+	poetry run pre-commit run -a
 
 # Implements this pattern for autodocumenting Makefiles:
 # https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
