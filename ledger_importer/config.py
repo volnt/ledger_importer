@@ -30,7 +30,7 @@ class Config(ABC):
         pass
 
     @abstractmethod
-    def parse_payee(self, fields: tuple) -> str:
+    def parse_target_account(self, fields: tuple) -> str:
         pass
 
     @abstractmethod
@@ -41,7 +41,7 @@ class Config(ABC):
         """
         Matching transactions will get merged in a single transaction.
 
-        When they are merged, the payee of transaction1 will be updated to the account of transaction2. This overrides the parse_payee return value.
+        When they are merged, the target_account of transaction1 will be updated to the account of transaction2. This overrides the parse_target_account return value.
 
         Default behavior is to merge transactions with opposite amounts and different accounts.
         """

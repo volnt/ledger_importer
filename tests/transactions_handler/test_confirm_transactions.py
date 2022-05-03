@@ -20,7 +20,7 @@ def test_skip_doesnt_confirm_transaction(transactions_handler, mock_stdin):
             date=datetime.datetime.now(),
             description="",
             amount=Decimal("-150"),
-            payee="Expenses",
+            target_account="Expenses",
             account="Assets:Checking",
         ),
     ]
@@ -37,7 +37,7 @@ def test_quit_doesnt_confirm_transaction(transactions_handler, mock_stdin):
             date=datetime.datetime.now(),
             description="",
             amount=Decimal("-150"),
-            payee="Expenses",
+            target_account="Expenses",
             account="Assets:Checking",
         ),
     ]
@@ -54,7 +54,7 @@ def test_empty_string_confirms_transaction(transactions_handler, mock_stdin):
             date=datetime.datetime.now(),
             description="",
             amount=Decimal("150"),
-            payee="Expenses",
+            target_account="Expenses",
             account="Assets:Checking",
         ),
     ]
@@ -64,14 +64,14 @@ def test_empty_string_confirms_transaction(transactions_handler, mock_stdin):
     assert len(confirmed_transactions) == 1
 
 
-def test_string_updates_payee_and_confirms_transaction(transactions_handler, mock_stdin):
+def test_string_updates_target_account_and_confirms_transaction(transactions_handler, mock_stdin):
     mock_stdin.readline.return_value = "Expenses:Foobar"
     transactions = [
         Transaction(
             date=datetime.datetime.now(),
             description="",
             amount=Decimal("-150"),
-            payee="Expenses",
+            target_account="Expenses",
             account="Assets:Checking",
         ),
     ]
@@ -79,4 +79,4 @@ def test_string_updates_payee_and_confirms_transaction(transactions_handler, moc
     confirmed_transactions = transactions_handler.confirm_transactions(transactions)
 
     assert len(confirmed_transactions) == 1
-    assert confirmed_transactions[0].payee == "Expenses:Foobar"
+    assert confirmed_transactions[0].target_account == "Expenses:Foobar"

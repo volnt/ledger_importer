@@ -8,7 +8,7 @@ The key features are:
 * **Auto-completion**: The confirmation step is auto-completed.
 * **Integration**: Easy to integrate with your pipeline.
 
-ledger_importer main selling point is that if you know Python, you can write complex rules to match & parse accounts / payees. All other tools try to be smart about the payee matching part but offer very little customization (regex matching is the best I've seen).
+ledger_importer main selling point is that if you know Python, you can write complex rules to match & parse accounts / target_accounts. All other tools try to be smart about the target_account matching part but offer very little customization (regex matching is the best I've seen).
 
 Another cool feature is that if you have several bank accounts, you can concatenate their csv exports and ledger_importer will de-duplicate transactions between them. The de-duplication rule can be customized to your needs.
 
@@ -30,7 +30,7 @@ A Config instance can be created by creating a new class that inherits `ledger_i
 * `parse_description(self, fields: tuple) -> str`
 * `parse_amount(self, fields: tuple) -> Decimal`
 * `format_amount(self, amount: Decimal) -> str`
-* `parse_payee(self, fields: tuple) -> str`
+* `parse_target_account(self, fields: tuple) -> str`
 * `parse_account(self, fields: tuple) -> str`
 
 The argument `fields: tuple` will be the csv row, with each column as an element of the tuple.
@@ -69,7 +69,7 @@ class LedgerImporterConfig(Config):
     def format_amount(self, amount: Decimal) -> str:
         return f"${amount}"
 
-    def parse_payee(self, fields: tuple) -> str:
+    def parse_target_account(self, fields: tuple) -> str:
         if self.parse_amount(fields) > 0:
             return "Income"
 

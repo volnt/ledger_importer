@@ -32,7 +32,7 @@ class LedgerImporterConfig(Config):
     def format_amount(self, amount: Decimal) -> str:
         return f"${amount}"
 
-    def parse_payee(self, fields: tuple) -> str:
+    def parse_target_account(self, fields: tuple) -> str:
         if self.parse_amount(fields) > 0:
             return "Income"
 

@@ -19,14 +19,14 @@ class TransactionsHandler:
             date=self.config.parse_date(row),
             description=self.config.parse_description(row),
             amount=self.config.parse_amount(row),
-            payee=self.config.parse_payee(row),
+            target_account=self.config.parse_target_account(row),
             account=self.config.parse_account(row),
         )
 
     def merge_transactions(self, transactions: list[Transaction]) -> list[Transaction]:
         """
         Take a list of transactions already sorted by date (oldest -> newest).
-        Update the payees of the transactions when they seem to match.
+        Update the target_accounts of the transactions when they seem to match.
 
         The matching is tried only on positive transactions, in this case
         it will look for older matching transactions.
@@ -41,7 +41,7 @@ class TransactionsHandler:
                         break
 
                     if self.config.transactions_match(transaction, matching_transaction):
-                        transaction.payee = matching_transaction.account
+                        transaction.target_account = matching_transaction.account
                         merged_transactions.append(matching_transaction)
                         break
 
@@ -81,12 +81,12 @@ class TransactionsHandler:
 
             if transaction.amount > 0:
                 print(
-                    f"""Which account provided this income? ([{transaction.payee}]/[q]uit/[s]kip) """,
+                    f"""Which account provided this income? ([{transaction.target_account}]/[q]uit/[s]kip) """,
                     file=sys.stderr,
                 )
             else:
                 print(
-                    f"""To which account did this money go? ([{transaction.payee}]/[q]uit/[s]kip) """,
+                    f"""To which account did this money go? ([{transaction.target_account}]/[q]uit/[s]kip) """,
                     file=sys.stderr,
                 )
 
@@ -101,7 +101,7 @@ class TransactionsHandler:
                     date=transaction.date,
                     description=transaction.description,
                     amount=transaction.amount,
-                    payee=answer,
+                    target_account=answer,
                     account=transaction.account,
                 )
             confirmed_transactions.append(transaction)

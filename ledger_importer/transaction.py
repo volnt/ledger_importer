@@ -14,11 +14,11 @@ class Transaction:
     date: datetime.datetime
     description: str
     amount: Decimal
-    payee: str
+    target_account: str
     account: str
 
     def to_ledger(self, config):
         return f"""{self.date.strftime("%Y/%m/%d")}    {self.description}
     {self.account}    {config.format_amount(self.amount)}
-    {self.payee}
+    {self.target_account}
 """

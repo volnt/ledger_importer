@@ -9,7 +9,7 @@ def test_to_ledger(config):
         date=datetime.datetime(year=2021, month=1, day=23),
         description="description",
         amount=Decimal("-150"),
-        payee="Expenses",
+        target_account="Expenses",
         account="Assets:Checking",
     )
 

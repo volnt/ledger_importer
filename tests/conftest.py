@@ -18,7 +18,7 @@ class MyConfig(Config):
     def parse_amount(self, fields):
         return Decimal(fields[2])
 
-    def parse_payee(self, _):
+    def parse_target_account(self, _):
         return "Expenses"
 
     def parse_account(self, _):
