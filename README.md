@@ -28,10 +28,7 @@ A Config instance can be created by creating a new class that inherits `ledger_i
 
 * `parse_date(self, fields: tuple) -> datetime.datetime`
 * `parse_payee(self, fields: tuple) -> str`
-* `parse_amount(self, fields: tuple) -> Decimal`
-* `format_amount(self, amount: Decimal) -> str`
-* `parse_target_account(self, fields: tuple) -> str`
-* `parse_account(self, fields: tuple) -> str`
+* `parse_postings(self, fields: tuple) -> list[Posting]`
 
 The argument `fields: tuple` will be the csv row, with each column as an element of the tuple.
 
