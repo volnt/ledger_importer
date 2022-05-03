@@ -1,12 +1,9 @@
 .DEFAULT_GOAL := help
 
-PYTHON := poetry run python
-
 .PHONY: test
 test:  ## Launch tests
-	${PYTHON} -m coverage run --source ledger_importer -m pytest -vv -s
-	${PYTHON} -m coverage report
-	${PYTHON} -m coverage html
+	poetry run pytest --cov=ledger_importer --cov-report=xml:/tmp/test-reports/coverage.xml --junitxml=/tmp/test-reports/junit.xml -vv -s tests
+	poetry run coverage html
 
 .PHONY: style
 style: ## Check code linting and style
