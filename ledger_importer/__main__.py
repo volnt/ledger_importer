@@ -9,7 +9,7 @@ import datetime
 import re
 from decimal import Decimal
 
-from ledger_importer import Config, runner
+from ledger_importer import Config, runner, Posting
 
 # Custom ledger importer configuration
 class LedgerImporterConfig(Config):
@@ -23,23 +23,19 @@ class LedgerImporterConfig(Config):
     def parse_date(self, fields: tuple) -> datetime.datetime:
         return datetime.datetime.strptime(fields[0], "%m-%d-%Y")
 
-    def parse_description(self, fields: tuple) -> str:
+    def parse_payee(self, fields: tuple) -> str:
         return fields[2]
 
-    def parse_amount(self, fields: tuple) -> Decimal:
-        return Decimal(re.sub("[€$, ]", "", fields[3]))
-
-    def format_amount(self, amount: Decimal) -> str:
-        return f"${amount}"
-
-    def parse_target_account(self, fields: tuple) -> str:
+    def parse_postings(self, fields: tuple) -> list[Posting]:
         if self.parse_amount(fields) > 0:
-            return "Income"
+            account = "Income"
+        else:
+            account = "Expenses"
 
-        return "Expenses"
+        posting = Posting(account="Assets:Checking", amount=Amount(quantity=Decimal(re.sub("[€$, ]", "", fields[3])), commodity="€"))
 
-    def parse_account(self, fields: tuple) -> str:
-        return "Assets:Checking"
+        # A Transaction should be at least 2 postings that have reversed amounts
+        return [posting, Posting(account=account, amount=posting.amount.reverse())]
 
 
 # The next lines are required to run ledger_importer

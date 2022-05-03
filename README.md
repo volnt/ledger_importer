@@ -27,7 +27,7 @@ The `runner` function takes a Config as the first argument.
 A Config instance can be created by creating a new class that inherits `ledger_importer.runner`. This new class must implement the following methods:
 
 * `parse_date(self, fields: tuple) -> datetime.datetime`
-* `parse_description(self, fields: tuple) -> str`
+* `parse_payee(self, fields: tuple) -> str`
 * `parse_amount(self, fields: tuple) -> Decimal`
 * `format_amount(self, amount: Decimal) -> str`
 * `parse_target_account(self, fields: tuple) -> str`
@@ -46,7 +46,7 @@ import datetime
 import re
 from decimal import Decimal
 
-from ledger_importer import Config, runner
+from ledger_importer import Config, runner, Posting
 
 # Custom ledger importer configuration
 class LedgerImporterConfig(Config):
@@ -60,23 +60,18 @@ class LedgerImporterConfig(Config):
     def parse_date(self, fields: tuple) -> datetime.datetime:
         return datetime.datetime.strptime(fields[0], "%m-%d-%Y")
 
-    def parse_description(self, fields: tuple) -> str:
+    def parse_payee(self, fields: tuple) -> str:
         return fields[2]
 
-    def parse_amount(self, fields: tuple) -> Decimal:
-        return Decimal(re.sub("[€$, ]", "", fields[3]))
-
-    def format_amount(self, amount: Decimal) -> str:
-        return f"${amount}"
-
-    def parse_target_account(self, fields: tuple) -> str:
+    def parse_postings(self, fields: tuple) -> list[Posting]:
         if self.parse_amount(fields) > 0:
-            return "Income"
+            account = "Income"
+        else:
+            account = "Expenses"
 
-        return "Expenses"
-
-    def parse_account(self, fields: tuple) -> str:
-        return "Assets:Checking"
+        return [
+            Posting(account=account, amount=Amount(quantity=Decimal(re.sub("[€$, ]", "", fields[3])), commodity="€"))
+        ]
 
 
 # The next lines are required to run ledger_importer
@@ -92,26 +87,26 @@ To run leger_importer, run the configuration module:
 ```sh
 $ python my_importer.py bank-statement.csv --journal-path journal.ledger
 
-|        Account         |    Date    |  Amount  |     Description     |
+|        Account         |    Date    |  Amount  |     Payee     |
 | Assets:Account:Florent | 2021/07/29 | 1234.56€ | VIR LOLE FOOB A.R.L |
 
 Which account provided this income? ([Income:Salary]/[q]uit/[s]kip)
 
 
-|        Account         |    Date    |  Amount |         Description          |
+|        Account         |    Date    |  Amount |         Payee          |
 | Assets:Account:Florent | 2021/08/02 | -11.77€ | CARD  27/07/21 SWILE XX*XXXX |
 
 To which account did this money go? ([Expenses:Restaurant]/[q]uit/[s]kip)
 
 
-|        Account         |    Date    |   Amount  |               Description               |
+|        Account         |    Date    |   Amount  |               Payee               |
 | Assets:Account:Florent | 2021/08/03 |  -784.00€ | VIR Save some € Mr.      Florent        |
 
 To which account did this money go? ([Expenses]/[q]uit/[s]kip)
 Assets:Savings
 
 
-|        Account         |    Date    |  Amount |          Description          |
+|        Account         |    Date    |  Amount |          Payee          |
 | Assets:Account:Florent | 2021/08/03 | -58.63€ | CARD  08/03/21 PAYPAL XX*XXXX |
 
 To which account did this money go? ([Expenses:Shopping]/[q]uit/[s]kip)

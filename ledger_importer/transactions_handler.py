@@ -5,6 +5,8 @@ import sys
 import _csv
 
 from ledger_importer.config import Config
+from ledger_importer.transaction import Amount
+from ledger_importer.transaction import Posting
 from ledger_importer.transaction import Transaction
 
 
@@ -17,10 +19,8 @@ class TransactionsHandler:
     def row_to_transaction(self, row: tuple) -> Transaction:
         return Transaction(
             date=self.config.parse_date(row),
-            description=self.config.parse_description(row),
-            amount=self.config.parse_amount(row),
-            target_account=self.config.parse_target_account(row),
-            account=self.config.parse_account(row),
+            payee=self.config.parse_payee(row),
+            postings=self.config.parse_postings(row),
         )
 
     def merge_transactions(self, transactions: list[Transaction]) -> list[Transaction]:
@@ -34,14 +34,14 @@ class TransactionsHandler:
         merged_transactions: list[Transaction] = []
 
         for transaction in transactions:
-            if transaction.amount > 0:
+            if transaction.postings[0].amount > 0:
                 for matching_transaction in transactions:
                     if matching_transaction is transaction:
                         # Nothing was found up to the current transaction
                         break
 
                     if self.config.transactions_match(transaction, matching_transaction):
-                        transaction.target_account = matching_transaction.account
+                        transaction.postings[1].account = matching_transaction.postings[0].account
                         merged_transactions.append(matching_transaction)
                         break
 
@@ -73,20 +73,20 @@ class TransactionsHandler:
         for transaction in transactions:
             print(
                 f"""
-| {"Account".center(max(len(transaction.account), len("Account")))} | {"Date".center(10)} | {"Amount".center(max(len(self.config.format_amount(transaction.amount)), len("Amount")))} | {"Description".center(max(len(transaction.description), len("Description")))} |
-| {transaction.account} | {transaction.date.strftime("%Y/%m/%d")} | {self.config.format_amount(transaction.amount)} | {transaction.description} |
+| {"Account".center(max(len(transaction.postings[0].account), len("Account")))} | {"Date".center(10)} | {"Amount".center(max(len(str(transaction.postings[0].amount)), len("Amount")))} | {"Payee".center(max(len(transaction.payee), len("Payee")))} |
+| {transaction.postings[0].account} | {transaction.date.strftime("%Y/%m/%d")} | {transaction.postings[0].amount} | {transaction.payee} |
     """,
                 file=sys.stderr,
             )
 
-            if transaction.amount > 0:
+            if transaction.postings[0].amount.quantity > 0:
                 print(
-                    f"""Which account provided this income? ([{transaction.target_account}]/[q]uit/[s]kip) """,
+                    f"""Which account provided this income? ([{transaction.postings[1].account}]/[q]uit/[s]kip) """,
                     file=sys.stderr,
                 )
             else:
                 print(
-                    f"""To which account did this money go? ([{transaction.target_account}]/[q]uit/[s]kip) """,
+                    f"""To which account did this money go? ([{transaction.postings[1].account}]/[q]uit/[s]kip) """,
                     file=sys.stderr,
                 )
 
@@ -99,10 +99,17 @@ class TransactionsHandler:
             if answer:
                 transaction = Transaction(
                     date=transaction.date,
-                    description=transaction.description,
-                    amount=transaction.amount,
-                    target_account=answer,
-                    account=transaction.account,
+                    payee=transaction.payee,
+                    postings=[
+                        transaction.postings[0],
+                        Posting(
+                            account=answer,
+                            amount=Amount(
+                                quantity=transaction.postings[1].amount.quantity,
+                                commodity=transaction.postings[1].amount.commodity,
+                            ),
+                        ),
+                    ],
                 )
             confirmed_transactions.append(transaction)
 

@@ -4,6 +4,8 @@ from unittest import mock
 
 import pytest
 
+from ledger_importer.transaction import Amount
+from ledger_importer.transaction import Posting
 from ledger_importer.transaction import Transaction
 
 
@@ -15,68 +17,64 @@ def mock_stdin():
 
 def test_skip_doesnt_confirm_transaction(transactions_handler, mock_stdin):
     mock_stdin.readline.return_value = "s"  # send "skip" command
-    transactions = [
-        Transaction(
-            date=datetime.datetime.now(),
-            description="",
-            amount=Decimal("-150"),
-            target_account="Expenses",
-            account="Assets:Checking",
-        ),
-    ]
+    transaction = Transaction(
+        date=datetime.datetime(year=2021, month=1, day=23),
+        payee="Description",
+        postings=[
+            Posting(account="Assets:Checking", amount=Amount(quantity=Decimal("-150"), commodity="€")),
+            Posting(account="Expenses", amount=Amount(quantity=Decimal("150"), commodity="€")),
+        ],
+    )
 
-    confirmed_transactions = transactions_handler.confirm_transactions(transactions)
+    confirmed_transactions = transactions_handler.confirm_transactions([transaction])
 
     assert len(confirmed_transactions) == 0
 
 
 def test_quit_doesnt_confirm_transaction(transactions_handler, mock_stdin):
     mock_stdin.readline.return_value = "q"  # send "quit" command
-    transactions = [
-        Transaction(
-            date=datetime.datetime.now(),
-            description="",
-            amount=Decimal("-150"),
-            target_account="Expenses",
-            account="Assets:Checking",
-        ),
-    ]
+    transaction = Transaction(
+        date=datetime.datetime(year=2021, month=1, day=23),
+        payee="Description",
+        postings=[
+            Posting(account="Assets:Checking", amount=Amount(quantity=Decimal("-150"), commodity="€")),
+            Posting(account="Expenses", amount=Amount(quantity=Decimal("150"), commodity="€")),
+        ],
+    )
 
-    confirmed_transactions = transactions_handler.confirm_transactions(transactions)
+    confirmed_transactions = transactions_handler.confirm_transactions([transaction])
 
     assert len(confirmed_transactions) == 0
 
 
 def test_empty_string_confirms_transaction(transactions_handler, mock_stdin):
     mock_stdin.readline.return_value = "\n"
-    transactions = [
-        Transaction(
-            date=datetime.datetime.now(),
-            description="",
-            amount=Decimal("150"),
-            target_account="Expenses",
-            account="Assets:Checking",
-        ),
-    ]
+    transaction = Transaction(
+        date=datetime.datetime(year=2021, month=1, day=23),
+        payee="Description",
+        postings=[
+            Posting(account="Assets:Checking", amount=Amount(quantity=Decimal("150"), commodity="€")),
+            Posting(account="Income", amount=Amount(quantity=Decimal("-150"), commodity="€")),
+        ],
+    )
 
-    confirmed_transactions = transactions_handler.confirm_transactions(transactions)
+    confirmed_transactions = transactions_handler.confirm_transactions([transaction])
 
     assert len(confirmed_transactions) == 1
 
 
 def test_string_updates_target_account_and_confirms_transaction(transactions_handler, mock_stdin):
     mock_stdin.readline.return_value = "Expenses:Foobar"
-    transactions = [
-        Transaction(
-            date=datetime.datetime.now(),
-            description="",
-            amount=Decimal("-150"),
-            target_account="Expenses",
-            account="Assets:Checking",
-        ),
-    ]
+    transaction = Transaction(
+        date=datetime.datetime(year=2021, month=1, day=23),
+        payee="Description",
+        postings=[
+            Posting(account="Assets:Checking", amount=Amount(quantity=Decimal("-150"), commodity="€")),
+            Posting(account="Expenses", amount=Amount(quantity=Decimal("150"), commodity="€")),
+        ],
+    )
 
-    confirmed_transactions = transactions_handler.confirm_transactions(transactions)
+    confirmed_transactions = transactions_handler.confirm_transactions([transaction])
 
     assert len(confirmed_transactions) == 1
-    assert confirmed_transactions[0].target_account == "Expenses:Foobar"
+    assert confirmed_transactions[0].postings[1].account == "Expenses:Foobar"

@@ -85,7 +85,7 @@ def main_wrapper(config: Config):
                 transactions = handler.confirm_transactions(transactions)
 
         for transaction in transactions:
-            print(transaction.to_ledger(config))
+            print(transaction.to_ledger())
 
     return main
 
