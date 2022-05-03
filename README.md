@@ -8,6 +8,10 @@ The key features are:
 * **Auto-completion**: The confirmation step is auto-completed.
 * **Integration**: Easy to integrate with your pipeline.
 
+ledger_importer main selling point is that if you know Python, you can write complex rules to match & parse accounts / payees. All other tools try to be smart about the payee matching part but offer very little customization (regex matching is the best I've seen).
+
+Another cool feature is that if you have several bank accounts, you can concatenate their csv exports and ledger_importer will de-duplicate transactions between them. The de-duplication rule can be customized to your needs.
+
 ## Installation
 
 ```sh
