@@ -36,7 +36,7 @@ class TransactionsHandler:
         for transaction in transactions:
             if transaction.postings[0].amount > 0:
                 for matching_transaction in transactions:
-                    if matching_transaction is transaction:
+                    if matching_transaction.date > transaction.date:
                         # Nothing was found up to the current transaction
                         break
 
