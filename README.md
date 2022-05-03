@@ -82,7 +82,8 @@ class LedgerImporterConfig(Config):
 # The next lines are required to run ledger_importer
 # when the config file is executed.
 if __name__ == "__main__":
-    runner(LedgerImporterConfig())```
+    runner(LedgerImporterConfig())
+```
 
 ## Run
 
