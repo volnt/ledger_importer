@@ -36,6 +36,10 @@ class TransactionsHandler:
         for transaction in transactions:
             if transaction.postings[0].amount > 0:
                 for matching_transaction in transactions:
+                    if any(matching_transaction is t for t in merged_transactions):
+                        # Transaction can be merged only once
+                        continue
+
                     if matching_transaction.date > transaction.date:
                         # Nothing was found up to the current transaction
                         break
