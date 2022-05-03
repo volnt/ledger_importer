@@ -35,8 +35,7 @@ The argument `fields: tuple` will be the csv row, with each column as an element
 Example configuration file:
 
 ```py
-# Name: my_importer.py
-
+#!/usr/bin/env python
 from __future__ import annotations
 
 import datetime
@@ -45,28 +44,14 @@ from decimal import Decimal
 
 from ledger_importer import Config, runner
 
-EXPENSES_MATCHER = {
-    "Expenses:Groceries": [
-        "costco",
-    ],
-    "Expenses:Subscriptions": [
-        "netflix",
-        "spotify",
-    ],
-    "Expenses:Shopping": [
-        "amazon",
-        "paypal",
-    ],
-}
-
-
+# Custom ledger importer configuration
 class LedgerImporterConfig(Config):
-    """
-    Our custom importer configuration.
-
-    All methods defined here must be defined to parse the csv.
-    """
+    # Define the number of lines that needs to be skipped at the beginning of the file.
+    # This is usefull if the csv has a line with the column names for example.
     skip_lines: int = 1
+
+    # The argument `fields` given in all parse_* methods contains a whole csv row in a tuple
+    # Each element of the tuple is a string representation of the column
 
     def parse_date(self, fields: tuple) -> datetime.datetime:
         return datetime.datetime.strptime(fields[0], "%m-%d-%Y")
@@ -75,7 +60,7 @@ class LedgerImporterConfig(Config):
         return fields[2]
 
     def parse_amount(self, fields: tuple) -> Decimal:
-        return Decimal(re.sub("[$,]", "", fields[3))
+        return Decimal(re.sub("[€$, ]", "", fields[3]))
 
     def format_amount(self, amount: Decimal) -> str:
         return f"${amount}"
@@ -84,14 +69,6 @@ class LedgerImporterConfig(Config):
         if self.parse_amount(fields) > 0:
             return "Income"
 
-        # Match the transaction with a payee based on regexp defined
-        # in EXPENSES_MATCHER.
-        for payee, exps in EXPENSES_MATCHER.items():
-            for exp in exps:
-                if re.match(rf".*{exp}.*", fields[2]):
-                    return payee
-
-        # Default to Expenses
         return "Expenses"
 
     def parse_account(self, fields: tuple) -> str:
@@ -101,8 +78,7 @@ class LedgerImporterConfig(Config):
 # The next lines are required to run ledger_importer
 # when the config file is executed.
 if __name__ == "__main__":
-    runner(LedgerImporterConfig())
-```
+    runner(LedgerImporterConfig())```
 
 ## Run
 
