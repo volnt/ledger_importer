@@ -14,7 +14,7 @@ from ledger_importer.transactions_handler import TransactionsHandler
 __all__ = ("Config", "runner")
 
 
-ACCOUNT_LINE = r"^account ([A-z_ :]+)( +;?.*)?"
+ACCOUNT_LINE = r"^account ([A-z_ :]*[A-z])( +;?.*)?"
 
 
 def parse_accounts(data: str) -> list[str]:

@@ -18,7 +18,7 @@ class Transaction:
     account: str
 
     def to_ledger(self, config):
-        return f"""{self.date.strftime("%Y/%m/%d")}       {self.description}
-    {self.account}              {config.format_amount(self.amount)}
+        return f"""{self.date.strftime("%Y/%m/%d")}    {self.description}
+    {self.account}    {config.format_amount(self.amount)}
     {self.payee}
 """
