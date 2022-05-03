@@ -119,9 +119,19 @@ q
 
 ## Usage
 
+A sample configuration can be generated:
+
+```sh
+python -m ledger_importer > my_importer.py
+```
+
+The configuration can be run directly:
+
 ```sh
 $ python my_importer.py --help
-Usage: my_importer.py [OPTIONS] CSV_PATH
+Usage: my_config.py [OPTIONS] CSV_PATH
+
+  Import a bank statement.
 
 Arguments:
   CSV_PATH  Path to the bank statement to import.  [required]
@@ -129,10 +139,7 @@ Arguments:
 Options:
   --journal-path PATH             Path a ledger journal to write & learn
                                   accounts from.
-  --install-completion [bash|zsh|fish|powershell|pwsh]
-                                  Install completion for the specified shell.
-  --show-completion [bash|zsh|fish|powershell|pwsh]
-                                  Show completion for the specified shell, to
-                                  copy it or customize the installation.
+  --quiet / --no-quiet            Don't ask questions and guess all the
+                                  accounts automatically.  [default: no-quiet]
   --help                          Show this message and exit.
 ```
