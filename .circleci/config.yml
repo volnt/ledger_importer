@@ -1,0 +1,53 @@
+version: 2.1
+
+orbs:
+  git-shallow-clone: guitarrapc/git-shallow-clone@2.0.3
+  python: circleci/python@1.1.0
+
+commands:
+  cancel_previous_builds:
+    description: Cancel previous builds for the current branch
+    steps:
+      - cancel_previous_build_and_wait/cancel_previous_build_and_wait:
+          wait: 0
+
+  checkout_repository:
+    description: Shallow clone repository
+    steps:
+      - git-shallow-clone/checkout
+
+  python-install-deps: &python-install-deps
+    description: Install python dependencies
+    steps:
+      - python/install-packages:
+          pkg-manager: poetry
+      - run: echo 'export PATH=$(poetry env info --path)/bin:$PATH' >> $BASH_ENV
+
+jobs:
+  style:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout_repository
+      - python-install-deps
+      - run: make style
+
+  test:
+    docker:
+      - image: cimg/python:3.9
+    steps:
+      - checkout_repository
+      - python-install-deps
+
+      - run: make test
+
+      - store_artifacts:
+          path: htmlcov
+      - store_test_results:
+          path: /tmp/test-reports/junit.xml
+
+workflows:
+  main:
+    jobs:
+      - style
+      - test
