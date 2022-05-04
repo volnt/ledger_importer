@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ledger_importer"
-version = "0.4.3"
+version = "0.4.4"
 description = "ledger_importer is a csv-to-ledger importer that can be configured in Python."
 readme = "README.md"
 authors = ["Florent Espanet <florent.esp@gmail.com>"]
