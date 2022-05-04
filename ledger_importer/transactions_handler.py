@@ -49,7 +49,7 @@ class TransactionsHandler:
                         merged_transactions.append(matching_transaction)
                         break
 
-        return [transaction for transaction in transactions if transaction not in merged_transactions]
+        return [transaction for transaction in transactions if not any(transaction is t for t in merged_transactions)]
 
     def parse_transactions(self, csv_reader: _csv._reader) -> list[Transaction]:
         """
