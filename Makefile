@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 
+PACKAGE_VERSION := grep "version =" pyproject.toml | sed -E 's/^version = "(.*)"/\1/g'
+
 .PHONY: test
 test:  ## Launch tests
 	poetry run pytest --cov=ledger_importer --cov-report=xml:/tmp/test-reports/coverage.xml --junitxml=/tmp/test-reports/junit.xml -vv -s tests
@@ -9,6 +11,32 @@ test:  ## Launch tests
 .PHONY: style
 style: ## Check code linting and style
 	poetry run pre-commit run -a
+
+ledger_importer/__init__.py: pyproject.toml
+	@printf "Generate $@ ......... "
+	@sed -E 's/__version__ = "(.*)"/__version__ = "$(shell ${PACKAGE_VERSION})"/' $@ -i
+	@printf "✓\n"
+
+.PHONY: version-patch
+version-patch: poetry-version-patch ledger_importer/__init__.py ## Create a new patch version
+
+.PHONY: version-minor
+version-minor: poetry-version-minor ledger_importer/__init__.py  ## Create a new minor version
+
+.PHONY: version-major
+version-major: poetry-version-major ledger_importer/__init__.py  ## Create a new major version
+
+.PHONY: poetry-version-patch
+poetry-version-patch:
+	@poetry version patch
+
+.PHONY: poetry-version-minor
+poetry-version-minor:
+	@poetry version minor
+
+.PHONY: poetry-version-major
+poetry-version-major:
+	@poetry version major
 
 # Implements this pattern for autodocumenting Makefiles:
 # https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html

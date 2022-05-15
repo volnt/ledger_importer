@@ -1,4 +1,4 @@
-from ledger_importer import AccountCompleter
+from ledger_importer.__main__ import AccountCompleter
 
 
 def test_complete():

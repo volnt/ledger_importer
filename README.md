@@ -18,20 +18,35 @@ Another cool feature is that if you have several bank accounts, you can concaten
 $ pip install ledger-importer
 ```
 
+## Quickstart
+
+1. Generate a new config file:
+
+```sh
+python -m ledger_importer init > my_importer.py
+```
+
+2. /Optional/: update the configuration for your needs (see the [Configure section](#Configure))
+
+3. Import your bank statement
+
+```sh
+python -m ledger_importer import --statement-path statement.csv --config-path my_importer.py::LedgerImporterConfig
+```
+
+Note: the ledger transactions are written to stdout. Redirect stdout to your ledger journal to write them there instead (add ` >> journal.ledger` at the end of the previous command).
+
 ## Configure
 
-ledger_importer works by using the configuration file as the entrypoint. The `ledger_importer.runner` function is the function that should be called when you want to run the program.
+`ledger_importer` is configured in Python. You can give your configuration to the ledger_importer CLI using a string ressembling [pytest node ids](https://docs.pytest.org/en/latest/how-to/usage.html#nodeids). For example: `ledger_importer import --statement-path statement.csv --config-path ~/ledger/my_config.py::LedgerConfig`.
 
-The `runner` function takes a Config as the first argument.
-
-A Config instance can be created by creating a new class that inherits `ledger_importer.runner`. This new class must implement the following methods:
+A Config instance can be created by creating a new class that inherits `ledger_importer.Config`. This new class must implement the following methods:
 
 * `parse_date(self, fields: tuple) -> datetime.datetime`
 * `parse_payee(self, fields: tuple) -> str`
 * `parse_postings(self, fields: tuple) -> list[Posting]`
 
 The argument `fields: tuple` will be the csv row, with each column as an element of the tuple.
-
 
 Example configuration file:
 
@@ -43,7 +58,7 @@ import datetime
 import re
 from decimal import Decimal
 
-from ledger_importer import Config, runner, Posting, Amount
+from ledger_importer import Config, Posting, Amount
 
 # Custom ledger importer configuration
 class LedgerImporterConfig(Config):
@@ -74,20 +89,14 @@ class LedgerImporterConfig(Config):
 
         # A Transaction should be at least 2 postings that have reversed amounts
         return [posting, Posting(account=account, amount=amount.reverse())]
-
-
-# The next lines are required to run ledger_importer
-# when the config file is executed.
-if __name__ == "__main__":
-    runner(LedgerImporterConfig())
 ```
 
 ## Run
 
-To run leger_importer, run the configuration module:
+To run leger_importer:
 
 ```sh
-$ python my_importer.py bank-statement.csv --journal-path journal.ledger
+$ python -m ledger_importer import --statement-path bank-statement.csv --journal-path journal.ledger --config-path my_importer.py::LedgerImporterConfig
 
 |        Account         |    Date    |  Amount  |        Payee        |
 | Assets:Account:Florent | 2021/07/29 | 1234.56€ | VIR LOLE FOOB A.R.L |
@@ -117,27 +126,46 @@ q
 
 ## Usage
 
-A sample configuration can be generated:
+Root command:
 
 ```sh
-python -m ledger_importer > my_importer.py
+$ python -m ledger_importer --help
+Usage: python -m ledger_importer [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help                          Show this message and exit.
+
+Commands:
+  import  Import a bank statement.
+  init    Bootstrap a config file that can later be customized.
 ```
 
-The configuration can be run directly:
+Import command imports bank statement and generates ledger transactions:
 
 ```sh
-$ python my_importer.py --help
-Usage: my_config.py [OPTIONS] CSV_PATH
+$ python -m ledger_importer import --help
+Usage: python -m ledger_importer import [OPTIONS]
 
   Import a bank statement.
 
-Arguments:
-  CSV_PATH  Path to the bank statement to import.  [required]
+Options:
+  --statement-path PATH  Path to the bank statement to import.  [required]
+  --config-path TEXT     Python path to the configuration file.  [required]
+  --journal-path PATH    Path a ledger journal to write & learn accounts from.
+  --quiet / --no-quiet   Don't ask questions and guess all the accounts
+                         automatically.  [default: no-quiet]
+  --help                 Show this message and exit.
+```
+
+Init command bootstraps a new config file:
+
+```sh
+$ python -m ledger_importer init --help
+Usage: python -m ledger_importer init [OPTIONS]
+
+  Bootstrap a config file that can later be customized.
 
 Options:
-  --journal-path PATH             Path a ledger journal to write & learn
-                                  accounts from.
-  --quiet / --no-quiet            Don't ask questions and guess all the
-                                  accounts automatically.  [default: no-quiet]
-  --help                          Show this message and exit.
+  --help  Show this message and exit.
+
 ```

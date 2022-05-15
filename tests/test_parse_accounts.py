@@ -1,4 +1,4 @@
-from ledger_importer import parse_accounts
+from ledger_importer.__main__ import parse_accounts
 
 
 def test_parse_accounts():
