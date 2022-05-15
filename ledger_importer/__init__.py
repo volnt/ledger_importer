@@ -7,4 +7,4 @@ from ledger_importer.transaction import Transaction
 
 __all__ = ("Config", "Amount", "Posting", "Transaction")
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
