@@ -148,15 +148,16 @@ def import_(
         print(transaction.to_ledger())
 
 
-def version_callback():
-    typer.echo(f"ledger_importer: version {__version__}")
-    raise typer.Exit()
+def version_callback(value: bool):
+    if value:
+        typer.echo(f"ledger_importer: version {__version__}")
+        raise typer.Exit()
 
 
 @app.callback()
 def main(
     ctx: typer.Context,
-    version: bool = typer.Option(None, callback=version_callback),
+    version: bool = typer.Option(None, "--version", callback=version_callback),
 ):
     pass
 
