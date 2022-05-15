@@ -23,7 +23,7 @@ $ pip install ledger-importer
 1. Generate a new config file:
 
 ```sh
-python -m ledger_importer init > my_importer.py
+ledger_importer init > my_importer.py
 ```
 
 2. /Optional/: update the configuration for your needs (see the [Configure section](#Configure))
@@ -31,7 +31,7 @@ python -m ledger_importer init > my_importer.py
 3. Import your bank statement
 
 ```sh
-python -m ledger_importer import --statement-path statement.csv --config-path my_importer.py::LedgerImporterConfig
+ledger_importer import --statement-path statement.csv --config-path my_importer.py::LedgerImporterConfig
 ```
 
 Note: the ledger transactions are written to stdout. Redirect stdout to your ledger journal to write them there instead (add ` >> journal.ledger` at the end of the previous command).
@@ -96,7 +96,7 @@ class LedgerImporterConfig(Config):
 To run leger_importer:
 
 ```sh
-$ python -m ledger_importer import --statement-path bank-statement.csv --journal-path journal.ledger --config-path my_importer.py::LedgerImporterConfig
+$ ledger_importer import --statement-path bank-statement.csv --journal-path journal.ledger --config-path my_importer.py::LedgerImporterConfig
 
 |        Account         |    Date    |  Amount  |        Payee        |
 | Assets:Account:Florent | 2021/07/29 | 1234.56€ | VIR LOLE FOOB A.R.L |
@@ -129,8 +129,8 @@ q
 Root command:
 
 ```sh
-$ python -m ledger_importer --help
-Usage: python -m ledger_importer [OPTIONS] COMMAND [ARGS]...
+$ ledger_importer --help
+Usage: ledger_importer [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help                          Show this message and exit.
@@ -143,8 +143,8 @@ Commands:
 Import command imports bank statement and generates ledger transactions:
 
 ```sh
-$ python -m ledger_importer import --help
-Usage: python -m ledger_importer import [OPTIONS]
+$ ledger_importer import --help
+Usage: ledger_importer import [OPTIONS]
 
   Import a bank statement.
 
@@ -160,8 +160,8 @@ Options:
 Init command bootstraps a new config file:
 
 ```sh
-$ python -m ledger_importer init --help
-Usage: python -m ledger_importer init [OPTIONS]
+$ ledger_importer init --help
+Usage: ledger_importer init [OPTIONS]
 
   Bootstrap a config file that can later be customized.
 
